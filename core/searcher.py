@@ -1,22 +1,21 @@
 import requests
 from bs4 import BeautifulSoup
 
-HEADERS = {
-    'User-Agent': 'Mozilla/5.0'
-}
-
 def get_page_contents(url):
-    try:
-        res = requests.get(url, headers=HEADERS)
-        if res.status_code == 200:
-            return res.text
-    except:
-        pass
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36'
+    }
+
+    page = requests.get(url, headers=headers)
+
+    if page.status_code == 200:
+        return page.text
+
     return None
 
 def get_publisher_urls(page_contents):
     soup = BeautifulSoup(page_contents, 'html.parser')
-    items = soup.find_all('a', class_='uael-grid-img')
+    items = soup.find_all('a', class_='e-gallery-item elementor-gallery-item elementor-animated-content e-gallery-first-row-item')
 
     urls = []
 

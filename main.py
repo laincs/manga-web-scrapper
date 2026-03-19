@@ -4,6 +4,7 @@ import core.data as data
 
 
 def get_publishers(url):
+    print('Searching publishers in ' + url)
     page_contents = searcher.get_page_contents(url)
     
     if page_contents:
@@ -16,6 +17,7 @@ def get_publishers(url):
 
 
 def get_series(url):
+    print('Searching series in ' + url)
     page_contents = searcher.get_page_contents(url)
 
     if page_contents:
@@ -32,7 +34,6 @@ def get_series(url):
 
 
 if __name__ == '__main__':
-    
     writter.init()
 
     data.clear_all()
