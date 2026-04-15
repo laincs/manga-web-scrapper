@@ -75,6 +75,8 @@ if __name__ == '__main__':
     
     for series_url in data.get_series():
         get_products(series_url)
+        
+    #get_products('https://nubecomics.com/anohana/')
     
     writter.clear_file("results/products.txt")
-    writter.save_to_txt("results/products.txt", data.get_series())
+    writter.save_to_txt("results/products.txt", data.get_products())
