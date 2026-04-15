@@ -27,26 +27,54 @@ def get_series(url):
         highlighted_series_urls = searcher.get_highlighted_series_urls(page_contents)
 
         for s_url in series_urls:
-            data.add_url(s_url)
+            data.add_series(s_url)
             
         for h_url in highlighted_series_urls:
-            data.add_url(h_url)
+            data.add_series(h_url)
     else:
         print('Failed to get series. In ' + url)
+        
+def get_products(url):
+    print('Searching products in ' + url)
+    page_contents = searcher.get_page_contents(url)
+
+    if page_contents:
+        products_urls = searcher.get_products_urls(page_contents)
+
+        for s_url in products_urls:
+            data.add_products(s_url)
+    else:
+        print('Failed to get products. In ' + url)
 
 
 if __name__ == '__main__':
     writter.init()
 
     data.clear_all()
-
-    get_publishers("https://nubecomics.com/mangas/")
     
-    writter.clear_file("results/publishers.txt")
-    writter.save_to_txt("results/publishers.txt", data.get_publishers())
+    if(False):
+        get_publishers("https://nubecomics.com/mangas/")
+    
+        writter.clear_file("results/publishers.txt")
+        writter.save_to_txt("results/publishers.txt", data.get_publishers())
 
+        for pub_url in data.get_publishers():
+            get_series(pub_url)
+        
+        writter.clear_file("results/series.txt")
+        writter.save_to_txt("results/series.txt", data.get_series())
+    else:
+        data.found_publishers = writter.load_from_txt("results/publishers.txt")
+        data.found_series = writter.load_from_txt("results/series.txt")
+        
+
+    
+    
     for pub_url in data.get_publishers():
-        get_series(pub_url)
+        get_products(pub_url)
     
-    writter.clear_file("results/series.txt")
-    writter.save_to_txt("results/series.txt", data.get_urls())
+    for series_url in data.get_series():
+        get_products(series_url)
+    
+    writter.clear_file("results/products.txt")
+    writter.save_to_txt("results/products.txt", data.get_series())

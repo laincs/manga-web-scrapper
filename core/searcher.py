@@ -52,3 +52,16 @@ def get_highlighted_series_urls(page_contents):
             urls.append(link)
 
     return urls
+
+def get_products_urls(page_contents):
+    soup = BeautifulSoup(page_contents, 'html.parser')
+    items = soup.find_all('a', class_='woocommerce-LoopProduct-link')
+
+    urls = []
+
+    for item in items:
+        link = item.get('href')
+        if link:
+            urls.append(link)
+
+    return urls
