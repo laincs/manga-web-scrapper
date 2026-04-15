@@ -15,10 +15,10 @@ def get_page_contents(url):
 
 def get_publisher_urls(page_contents):
     soup = BeautifulSoup(page_contents, 'html.parser')
-    items = soup.find_all('a', class_='e-gallery-item elementor-gallery-item elementor-animated-content e-gallery-first-row-item')
+    
+    items = soup.select('a.e-gallery-item')
 
     urls = []
-
     for item in items:
         link = item.get('href')
         if link:

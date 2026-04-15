@@ -1,6 +1,7 @@
 import core.searcher as searcher
 import core.writter as writter
 import core.data as data
+import core.processor as proccessor
 
 
 def get_publishers(url):
@@ -11,7 +12,8 @@ def get_publishers(url):
         publishers_urls = searcher.get_publisher_urls(page_contents)
 
         for pub_url in publishers_urls:
-            data.add_publisher(pub_url)
+            for comb_url in proccessor.GetCombinationFromStrip(proccessor.GetStripURL(pub_url), proccessor.GetBaseURL(pub_url)):
+                data.add_publisher(comb_url)
     else:
         print('Failed to get publishers.')
 
@@ -39,12 +41,12 @@ if __name__ == '__main__':
     data.clear_all()
 
     get_publishers("https://nubecomics.com/mangas/")
+    
+    writter.clear_file("results/publishers.txt")
+    writter.save_to_txt("results/publishers.txt", data.get_publishers())
 
     for pub_url in data.get_publishers():
         get_series(pub_url)
-
-    writter.clear_file("results/publishers.txt")
-    writter.save_to_txt("results/publishers.txt", data.get_publishers())
     
     writter.clear_file("results/series.txt")
     writter.save_to_txt("results/series.txt", data.get_urls())
