@@ -2,6 +2,14 @@ found_publishers = set()
 found_series = set()
 found_products = set()
 
+fake_content = set()
+
+def set_fake_content(new_content):
+    fake_content.add(new_content)
+    
+def get_fake_content():
+    return list(fake_content)[0]
+
 def add_products(url):
     global found_products
     if url:
