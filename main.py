@@ -3,18 +3,16 @@ import core.writter as writter
 import core.data as data
 import core.processor as proccessor
 
+def is_valid_page(page_contents):
+    return page_contents and searcher.get_page_health(page_contents, data.get_fake_content())
 
 def get_publishers(url):    
     print('Searching publishers in ' + url)
     page_contents = searcher.get_page_contents(url)
     
-    if not page_contents:
+    if not is_valid_page(page_contents):
         print("Web not found:", url)
         return
-    
-    if(searcher.get_page_health(page_contents, data.get_fake_content()) == False or page_contents == None): 
-        print('Web not found: ' + url)
-        return 
     
     if page_contents:
         publishers_urls = searcher.get_publisher_urls(page_contents)
@@ -30,13 +28,9 @@ def get_series(url):
     print('Searching series in ' + url)
     page_contents = searcher.get_page_contents(url)
     
-    if not page_contents:
+    if not is_valid_page(page_contents):
         print("Web not found:", url)
         return
-    
-    if(searcher.get_page_health(page_contents, data.get_fake_content()) == False or page_contents == None): 
-        print('Web not found: ' + url)
-        return 
 
     if page_contents:
         series_urls = searcher.get_series_urls(page_contents)
@@ -54,14 +48,9 @@ def get_products(url):
     print('Searching products in ' + url)
     page_contents = searcher.get_page_contents(url)
     
-    if not page_contents:
+    if not is_valid_page(page_contents):
         print("Web not found:", url)
         return
-
-
-    if(searcher.get_page_health(page_contents, data.get_fake_content()) == False or page_contents == None): 
-            print('Web not found: ' + url)
-            return 
     
     if page_contents:
         products_urls = searcher.get_products_urls(page_contents)
@@ -75,14 +64,9 @@ def get_product_data(url):
     print('Searching product data in ' + url)
     page_contents = searcher.get_page_contents(url)
     
-    if not page_contents:
+    if not is_valid_page(page_contents):
         print("Web not found:", url)
-        return
-
-
-    if(searcher.get_page_health(page_contents, data.get_fake_content()) == False or page_contents == None): 
-            print('Web not found: ' + url)
-            return 
+        return 
     
     if page_contents:
         data_cluster = searcher.get_product_data(page_contents)
@@ -98,9 +82,7 @@ if __name__ == '__main__':
     writter.init()
 
     data.clear_all()
-    
     data.set_fake_content(searcher.get_page_raw_contents('https://nubecomics.com/fake-url-123456789-aaa'))
-    print(searcher.get_page_health('https://nubecomics.com/mangas/', data.get_fake_content()))
     
     if(False):
         print("Start")

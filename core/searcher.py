@@ -1,5 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
+import random
 
 def get_page_health(target_content, fake_content):
     if not target_content or not fake_content:
@@ -88,6 +89,22 @@ def get_products_urls(page_contents):
 def clean(text):
     return " ".join(text.replace("\xa0", " ").split())
 
+""" 
+Title = "One Piece",
+Volume = 1,
+Price = 10900m,
+AuthorId = oda.Id,
+PublisherId = shueisha.Id,
+Description = "Luffy begins his adventure to become Pirate King.",
+Stock = 20,
+ISBN = "9784088725093",
+SKU = "OP-001",
+ImageUrl = "",
+Categories = new List<Category> { shonen, action, fantasy }
+
+
+"""
+
 def get_product_data(page_contents):
     soup = BeautifulSoup(page_contents, 'html.parser')
 
@@ -97,16 +114,35 @@ def get_product_data(page_contents):
 
     title = container.select_one("h1.product_title")
     price = container.select_one("span.woocommerce-Price-amount")
+    
+    image_container = soup.select_one("div.woocommerce-product-gallery__image a")
+    image_url = image_container.get("href") if image_container else None
+    
+    desc_container = soup.select_one("#tab-description")
+    if not desc_container: return None
+    paragraphs = desc_container.find_all("p")
+    description = " ".join(p.get_text(strip=True) for p in paragraphs)
+    
+    tag_container = soup.select_one("span.posted_in")
+    if not tag_container: return []
+    tags = tag_container.find_all("a")
+    tag_list = [tag.get_text(strip=True) for tag in tags]
+
+
 
     result = {
         "title": title.get_text(strip=True) if title else None,
         "price": price.get_text(strip=True) if price else None,
+        "formato": None,
+        "stock" : random.randint(0, 100),
+        "image": image_url,
         "mangaka": None,
-        "contenido": None,
+        "volume": None,
         "editorial": None,
         "editorial_original": None,
-        "formato": None,
-        "isbn": None
+        "description": description,
+        "isbn": None,
+        "tags": tag_list
     }
 
     desc = soup.select_one("div.woocommerce-product-details__short-description")
@@ -135,7 +171,7 @@ def get_product_data(page_contents):
         if "mangaka" in key:
             result["mangaka"] = value
         elif "contenido" in key:
-            result["contenido"] = value
+            result["volume"] = value
         elif "editorial original" in key:
             result["editorial_original"] = value
         elif "editorial" in key:
