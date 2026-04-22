@@ -71,9 +71,12 @@ def get_product_data(url):
     if page_contents:
         data_cluster = searcher.get_product_data(page_contents)
         #print(data_cluster)
-
+        """ data.add_final_data(data_cluster)
+        print(data.get_final_data()) """
+        
         for pd in data_cluster:
             print(f"{pd}: {data_cluster[pd]}")
+        
     else:
         print('Failed to get products. In ' + url)
 

@@ -1,6 +1,7 @@
 found_publishers = set()
 found_series = set()
 found_products = set()
+found_final_data = set()
 
 fake_content = set()
 
@@ -9,6 +10,18 @@ def set_fake_content(new_content):
     
 def get_fake_content():
     return list(fake_content)[0]
+
+def add_final_data(url):
+    global found_final_data
+    if url:
+        found_final_data.add(url)
+
+def get_final_data():
+    return list(found_final_data)
+
+def clear_final_data():
+    global found_final_data
+    found_final_data.clear()
 
 def add_products(url):
     global found_products
