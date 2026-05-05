@@ -3,89 +3,63 @@ import core.writter as writter
 import core.data as data
 import core.processor as proccessor
 
-def is_valid_page(page_contents):
-    return page_contents and searcher.get_page_health(page_contents, data.get_fake_content())
+def with_page(func):
+    def wrapper(url, *args, **kwargs):
+        print(f"{func.__name__} -> {url}")
 
-def get_publishers(url):    
-    print('Searching publishers in ' + url)
-    page_contents = searcher.get_page_contents(url)
+        page_contents = searcher.get_page_contents(url)
+
+        if not page_contents or not (page_contents and searcher.get_page_health(page_contents, list(data.fake_content)[0])):
+            print("Web not found:", url)
+            return None
+
+        return func(url, page_contents, *args, **kwargs)
     
-    if not is_valid_page(page_contents):
-        print("Web not found:", url)
-        return
-    
-    if page_contents:
-        publishers_urls = searcher.get_publisher_urls(page_contents)
+    return wrapper
 
-        for pub_url in publishers_urls:
-            for comb_url in proccessor.GetCombinationFromStrip(proccessor.GetStripURL(pub_url), proccessor.GetBaseURL(pub_url)):
-                data.add_publisher(comb_url)
-    else:
-        print('Failed to get publishers.')
+@with_page
+def get_publishers(url, page_contents):    
+    publishers_urls = searcher.get_publisher_urls(page_contents)
+
+    for pub_url in publishers_urls:
+        for comb_url in proccessor.GetCombinationFromStrip(proccessor.GetStripURL(pub_url), proccessor.GetBaseURL(pub_url)):
+            data.add_publisher(comb_url)
 
 
-def get_series(url):
-    print('Searching series in ' + url)
-    page_contents = searcher.get_page_contents(url)
-    
-    if not is_valid_page(page_contents):
-        print("Web not found:", url)
-        return
+@with_page
+def get_series(url, page_contents):
+    series_urls = searcher.get_series_urls(page_contents)
+    highlighted_series_urls = searcher.get_highlighted_series_urls(page_contents)
 
-    if page_contents:
-        series_urls = searcher.get_series_urls(page_contents)
-        highlighted_series_urls = searcher.get_highlighted_series_urls(page_contents)
-
-        for s_url in series_urls:
-            data.add_series(s_url)
-            
-        for h_url in highlighted_series_urls:
-            data.add_series(h_url)
-    else:
-        print('Failed to get series. In ' + url)
+    for s_url in series_urls:
+        data.add_series(s_url)
         
-def get_products(url):    
-    print('Searching products in ' + url)
-    page_contents = searcher.get_page_contents(url)
-    
-    if not is_valid_page(page_contents):
-        print("Web not found:", url)
-        return
-    
-    if page_contents:
-        products_urls = searcher.get_products_urls(page_contents)
+    for h_url in highlighted_series_urls:
+        data.add_series(h_url)
 
-        for s_url in products_urls:
-            data.add_products(s_url)
-    else:
-        print('Failed to get products. In ' + url)
+@with_page
+def get_products(url, page_contents):    
+    products_urls = searcher.get_products_urls(page_contents)
+
+    for s_url in products_urls:
+        data.add_products(s_url)
         
-def get_product_data(url):    
-    print('Searching product data in ' + url)
-    page_contents = searcher.get_page_contents(url)
+@with_page
+def get_product_data(url, page_contents):
+    data_cluster = searcher.get_product_data(page_contents)
+    #print(data_cluster)
+    """ data.add_final_data(data_cluster)
+    print(data.get_final_data()) """
     
-    if not is_valid_page(page_contents):
-        print("Web not found:", url)
-        return 
-    
-    if page_contents:
-        data_cluster = searcher.get_product_data(page_contents)
-        #print(data_cluster)
-        """ data.add_final_data(data_cluster)
-        print(data.get_final_data()) """
-        
-        for pd in data_cluster:
-            print(f"{pd}: {data_cluster[pd]}")
-        
-    else:
-        print('Failed to get products. In ' + url)
+    for pd in data_cluster:
+        print(f"{pd}: {data_cluster[pd]}")
 
 
 if __name__ == '__main__':
     writter.init()
 
-    data.clear_all()
-    data.set_fake_content(searcher.get_page_raw_contents('https://nubecomics.com/fake-url-123456789-aaa'))
+    #data.clear_all()
+    data.fake_content.add(searcher.get_page_raw_contents('https://nubecomics.com/fake-url-123456789-aaa'))
     
     if(False):
         print("Start")
